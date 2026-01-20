@@ -175,6 +175,7 @@ export interface Database {
           event_date: string;
           event_end_date: string | null;
           location: string | null;
+          city: string | null;
           image_url: string | null;
           registration_url: string | null;
           replay_url: string | null;
@@ -193,6 +194,7 @@ export interface Database {
           event_date: string;
           event_end_date?: string | null;
           location?: string | null;
+          city?: string | null;
           image_url?: string | null;
           registration_url?: string | null;
           replay_url?: string | null;
@@ -211,6 +213,7 @@ export interface Database {
           event_date?: string;
           event_end_date?: string | null;
           location?: string | null;
+          city?: string | null;
           image_url?: string | null;
           registration_url?: string | null;
           replay_url?: string | null;
