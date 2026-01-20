@@ -1,0 +1,36 @@
+{
+  "locations": [
+    {
+      "id": "paris",
+      "city": "Paris",
+      "region": "Île-de-France",
+      "coordinates": [48.8566, 2.3522],
+      "eventCount": 1,
+      "eventIds": ["event-1"]
+    },
+    {
+      "id": "lyon",
+      "city": "Lyon",
+      "region": "Auvergne-Rhône-Alpes",
+      "coordinates": [45.7640, 4.8357],
+      "eventCount": 1,
+      "eventIds": ["event-2"]
+    },
+    {
+      "id": "lille",
+      "city": "Lille",
+      "region": "Hauts-de-France",
+      "coordinates": [50.6292, 3.0573],
+      "eventCount": 1,
+      "eventIds": ["event-3"]
+    },
+    {
+      "id": "marseille",
+      "city": "Marseille",
+      "region": "Provence-Alpes-Côte d'Azur",
+      "coordinates": [43.2965, 5.3698],
+      "eventCount": 1,
+      "eventIds": ["event-4"]
+    }
+  ]
+}

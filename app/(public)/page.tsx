@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { NewsletterForm } from "@/components/forms/newsletter-form";
 import { Hero } from "@/components/hero/hero";
+import { FranceMap } from "@/components/map/france-map";
 
 const features = [
   {
@@ -39,6 +40,9 @@ export default function HomePage() {
           registrationUrl: "/events",
         }}
       />
+
+      {/* Interactive Map Section */}
+      <FranceMap />
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-16">
