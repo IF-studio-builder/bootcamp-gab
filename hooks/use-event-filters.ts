@@ -1,13 +1,12 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useMemo, useCallback, useTransition, useDeferredValue } from "react";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import type { Event } from "@/lib/supabase/types";
 import type { EventFilter } from "@/lib/utils/filter-events";
 import {
   parseFiltersFromURL,
   filtersToURLParams,
-  buildEventsURL,
 } from "@/lib/utils/url-params";
 import {
   filterEvents,
@@ -39,6 +38,7 @@ export function useEventFilters(events: Event[]) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   // Parse les filtres depuis l'URL
   const filters = useMemo(
@@ -46,10 +46,13 @@ export function useEventFilters(events: Event[]) {
     [searchParams]
   );
 
-  // Événements filtrés
+  // Différer la valeur des filtres pour le debouncing (surtout pour searchQuery)
+  const deferredFilters = useDeferredValue(filters);
+
+  // Événements filtrés avec la valeur différée
   const filteredEvents = useMemo(
-    () => filterEvents(events, filters),
-    [events, filters]
+    () => filterEvents(events, deferredFilters),
+    [events, deferredFilters]
   );
 
   // Compteurs par ville
@@ -102,39 +105,47 @@ export function useEventFilters(events: Event[]) {
     }));
   }, [events, filters.cities, filters.type]);
 
-  // Mettre à jour les filtres et l'URL
+  // Mettre à jour les filtres et l'URL avec shallow routing optimisé
   const updateFilters = useCallback(
     (newFilters: Partial<EventFilter>) => {
-      const updatedFilters: EventFilter = {
-        ...filters,
-        ...newFilters,
-      };
+      startTransition(() => {
+        const updatedFilters: EventFilter = {
+          ...filters,
+          ...newFilters,
+        };
 
-      const params = filtersToURLParams(updatedFilters);
-      const queryString = params.toString();
-      const newURL = queryString ? `${pathname}?${queryString}` : pathname;
+        const params = filtersToURLParams(updatedFilters);
+        const queryString = params.toString();
+        const newURL = queryString ? `${pathname}?${queryString}` : pathname;
 
-      router.push(newURL, { scroll: false });
+        // Utiliser router.push avec scroll: false pour shallow routing
+        // Cela évite le rechargement complet tout en synchronisant useSearchParams
+        router.push(newURL, { scroll: false });
+      });
     },
-    [filters, pathname, router]
+    [filters, pathname, router, startTransition]
   );
 
   // Réinitialiser les filtres
   const resetFilters = useCallback(() => {
-    router.push(pathname, { scroll: false });
-  }, [pathname, router]);
+    startTransition(() => {
+      router.push(pathname, { scroll: false });
+    });
+  }, [pathname, router, startTransition]);
 
   // Vérifier si des filtres sont actifs
   const hasActiveFilters = useMemo(() => {
     return (
       filters.cities.length > 0 ||
       filters.type !== "all" ||
-      filters.period !== "all"
+      filters.period !== "all" ||
+      (filters.searchQuery && filters.searchQuery.trim().length > 0)
     );
   }, [filters]);
 
   return {
     filters,
+    deferredFilters,
     filteredEvents,
     cityCounts,
     typeCounts,
@@ -142,5 +153,6 @@ export function useEventFilters(events: Event[]) {
     updateFilters,
     resetFilters,
     hasActiveFilters,
+    isPending,
   };
 }

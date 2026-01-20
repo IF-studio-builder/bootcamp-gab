@@ -44,7 +44,11 @@ export function parseFiltersFromURL(
       ? (periodParam.toLowerCase() as EventFilter["period"])
       : "all";
 
-  return { cities, type, period };
+  // Parse search (recherche textuelle)
+  const searchParam = searchParams.get("search");
+  const searchQuery = searchParam ? decodeURIComponent(searchParam).trim() : undefined;
+
+  return { cities, type, period, searchQuery };
 }
 
 /**
@@ -66,6 +70,11 @@ export function filtersToURLParams(filters: EventFilter): URLSearchParams {
   // Ajouter period si différent de "all"
   if (filters.period !== "all") {
     params.set("period", filters.period);
+  }
+
+  // Ajouter search si présent et non vide
+  if (filters.searchQuery && filters.searchQuery.trim().length > 0) {
+    params.set("search", encodeURIComponent(filters.searchQuery.trim()));
   }
 
   return params;

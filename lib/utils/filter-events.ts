@@ -4,6 +4,7 @@ export type EventFilter = {
   cities: string[];
   type: "all" | "meetup" | "webinar" | "workshop" | "conference";
   period: "all" | "upcoming" | "replays";
+  searchQuery?: string;
 };
 
 /**
@@ -40,7 +41,25 @@ export function filterEvents(
       periodMatch = eventDate < now && event.replay_url !== null;
     }
 
-    return cityMatch && typeMatch && periodMatch;
+    // Filtre recherche textuelle (AND logique)
+    let searchMatch = true;
+    if (filters.searchQuery && filters.searchQuery.trim().length > 0) {
+      const searchLower = filters.searchQuery.toLowerCase().trim();
+      const searchTerms = searchLower.split(/\s+/).filter((term) => term.length > 0);
+      
+      if (searchTerms.length > 0) {
+        // Recherche dans titre et description
+        const titleLower = (event.title || "").toLowerCase();
+        const descriptionLower = (event.description || "").toLowerCase();
+        
+        const searchableText = `${titleLower} ${descriptionLower}`;
+        
+        // Tous les termes doivent être présents (logique AND)
+        searchMatch = searchTerms.every((term) => searchableText.includes(term));
+      }
+    }
+
+    return cityMatch && typeMatch && periodMatch && searchMatch;
   });
 }
 

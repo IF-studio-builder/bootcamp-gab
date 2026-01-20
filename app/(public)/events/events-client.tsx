@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { EventFilters } from "@/components/events/event-filters";
 import { EventCard } from "@/components/events/event-card";
+import { EventCardSkeleton } from "@/components/events/event-card-skeleton";
 import { EmptyState } from "@/components/events/empty-state";
 import { useEventFilters } from "@/hooks/use-event-filters";
 import { sortEvents, separateEventsByPeriod } from "@/lib/utils/sort-events";
 import type { Event } from "@/lib/supabase/types";
+import { cn } from "@/lib/utils";
 
 interface EventsClientProps {
   events: Event[];
@@ -22,6 +24,7 @@ function EventsContent({ events }: EventsClientProps) {
     filteredEvents,
     resetFilters,
     hasActiveFilters,
+    isPending,
   } = useEventFilters(events);
 
   // Trier les événements filtrés
@@ -96,8 +99,19 @@ function EventsContent({ events }: EventsClientProps) {
                 <Calendar className="h-5 w-5 text-primary" />
                 Prochains événements
               </h2>
-              {upcoming.length > 0 ? (
+              {isPending && upcoming.length === 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <EventCardSkeleton key={i} />
+                  ))}
+                </div>
+              ) : upcoming.length > 0 ? (
+                <div
+                  className={cn(
+                    "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200",
+                    isPending && "opacity-50"
+                  )}
+                >
                   {upcoming.map((event) => (
                     <EventCard key={event.id} event={event} />
                   ))}
@@ -131,8 +145,19 @@ function EventsContent({ events }: EventsClientProps) {
                 <Play className="h-5 w-5 text-primary" />
                 Replays disponibles
               </h2>
-              {past.length > 0 ? (
+              {isPending && past.length === 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <EventCardSkeleton key={i} />
+                  ))}
+                </div>
+              ) : past.length > 0 ? (
+                <div
+                  className={cn(
+                    "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity duration-200",
+                    isPending && "opacity-50"
+                  )}
+                >
                   {past.map((event) => (
                     <EventCard key={event.id} event={event} />
                   ))}

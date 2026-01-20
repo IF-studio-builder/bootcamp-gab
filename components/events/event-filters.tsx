@@ -1,14 +1,16 @@
 "use client";
 
-import { MapPin, Calendar, Tag } from "lucide-react";
+import { MapPin, Calendar, Tag, Search, Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useEventFilters, type TypeCount, type PeriodCount } from "@/hooks/use-event-filters";
 import type { Event } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 interface EventFiltersProps {
   events: Event[];
@@ -24,7 +26,35 @@ export function EventFilters({ events, className }: EventFiltersProps) {
     updateFilters,
     resetFilters,
     hasActiveFilters,
+    isPending,
   } = useEventFilters(events);
+
+  // État local pour le champ de recherche (pour le debouncing)
+  const [searchInput, setSearchInput] = useState(filters.searchQuery || "");
+
+  // Synchroniser l'input avec les filtres URL (pour le back/forward)
+  useEffect(() => {
+    setSearchInput(filters.searchQuery || "");
+  }, [filters.searchQuery]);
+
+  // Debounce la mise à jour de l'URL pour la recherche (300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Ne mettre à jour que si la valeur a changé
+      if (searchInput !== (filters.searchQuery || "")) {
+        updateFilters({ searchQuery: searchInput });
+      }
+    }, 300);
+
+    // Nettoyer le timer si l'utilisateur continue à taper
+    return () => clearTimeout(timer);
+  }, [searchInput, filters.searchQuery, updateFilters]);
+
+  const handleSearchChange = (value: string) => {
+    // Mettre à jour l'input immédiatement pour une réactivité visuelle
+    setSearchInput(value);
+    // La mise à jour de l'URL sera faite par le useEffect avec debounce
+  };
 
   // Normaliser les villes pour la comparaison (insensible à la casse)
   const normalizeCity = (city: string) => city.toLowerCase();
@@ -67,12 +97,34 @@ export function EventFilters({ events, className }: EventFiltersProps) {
             variant="ghost"
             size="sm"
             onClick={resetFilters}
+            disabled={isPending}
             className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground"
           >
             Réinitialiser
           </Button>
         )}
       </div>
+
+      {/* Filtre Recherche Textuelle */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <Label className="text-sm font-medium">Recherche</Label>
+          {isPending && (
+            <Loader2 className="h-3 w-3 text-muted-foreground animate-spin ml-auto" />
+          )}
+        </div>
+        <Input
+          type="text"
+          placeholder="Rechercher un événement..."
+          value={searchInput}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          className="w-full"
+          disabled={isPending}
+        />
+      </div>
+
+      <Separator />
 
       {/* Filtre Ville */}
       <div className="space-y-3">
@@ -96,8 +148,8 @@ export function EventFilters({ events, className }: EventFiltersProps) {
                 <Checkbox
                   id={`city-${city}`}
                   checked={selected}
-                  disabled={disabled}
-                  onCheckedChange={() => !disabled && handleCityToggle(city)}
+                  disabled={disabled || isPending}
+                  onCheckedChange={() => !disabled && !isPending && handleCityToggle(city)}
                 />
                 <Label
                   htmlFor={`city-${city}`}
@@ -128,6 +180,7 @@ export function EventFilters({ events, className }: EventFiltersProps) {
         <RadioGroup
           value={filters.type}
           onValueChange={(value) => handleTypeChange(value as TypeCount["type"])}
+          disabled={isPending}
         >
           {typeCounts.map(({ type, label, count }) => {
             const disabled = count === 0 && type !== filters.type;
@@ -176,6 +229,7 @@ export function EventFilters({ events, className }: EventFiltersProps) {
           onValueChange={(value) =>
             handlePeriodChange(value as PeriodCount["period"])
           }
+          disabled={isPending}
         >
           {periodCounts.map(({ period, label, count }) => {
             const disabled = count === 0 && period !== filters.period;
