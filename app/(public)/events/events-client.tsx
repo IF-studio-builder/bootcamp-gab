@@ -8,6 +8,7 @@ import { EventFilters } from "@/components/events/event-filters";
 import { EventCard } from "@/components/events/event-card";
 import { EventCardSkeleton } from "@/components/events/event-card-skeleton";
 import { EmptyState } from "@/components/events/empty-state";
+import { ErrorState } from "@/components/events/error-state";
 import { useEventFilters } from "@/hooks/use-event-filters";
 import { sortEvents, separateEventsByPeriod } from "@/lib/utils/sort-events";
 import type { Event } from "@/lib/supabase/types";
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 interface EventsClientProps {
   events: Event[];
+  error?: string | null;
 }
 
 function EventsContent({ events }: EventsClientProps) {
@@ -194,7 +196,22 @@ function EventsContent({ events }: EventsClientProps) {
   );
 }
 
-export function EventsClient({ events }: EventsClientProps) {
+export function EventsClient({ events, error }: EventsClientProps) {
+  // Afficher l'erreur si elle existe
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mb-8">
+          <h1 className="font-heading text-3xl font-bold mb-4">Événements</h1>
+        </div>
+        <ErrorState
+          onRetry={() => window.location.reload()}
+          error={new Error(error)}
+        />
+      </div>
+    );
+  }
+
   return (
     <Suspense fallback={
       <div className="container mx-auto px-4 py-12">
