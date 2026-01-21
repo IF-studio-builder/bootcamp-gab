@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ComposableMap, Geographies, Geography, ZoomableGroup } from "@vnedyalk0v/react19-simple-maps";
+import { ComposableMap, Geographies, Geography, ZoomableGroup, createCoordinates } from "@vnedyalk0v/react19-simple-maps";
 import { MapMarker } from "./map-marker";
 import eventLocations from "@/data/event-locations.json";
 import type { EventLocation } from "@/lib/map-utils";
@@ -28,7 +28,7 @@ export function FranceMap() {
           <ComposableMap
             projection="geoMercator"
             projectionConfig={{
-              center: [2.5, 46.8],
+              center: createCoordinates(2.5, 46.8),
               scale: 2400,
             }}
             className="w-full h-full"
@@ -37,7 +37,7 @@ export function FranceMap() {
               zoom={1}
               minZoom={1}
               maxZoom={4}
-              center={[2.5, 46.8]}
+              center={createCoordinates(2.5, 46.8)}
             >
               <Geographies geography="/maps/france.json">
                 {({ geographies }) =>

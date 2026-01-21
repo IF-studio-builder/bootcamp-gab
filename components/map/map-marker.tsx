@@ -1,6 +1,6 @@
 "use client";
 
-import { Marker } from "@vnedyalk0v/react19-simple-maps";
+import { Marker, createCoordinates } from "@vnedyalk0v/react19-simple-maps";
 import { calculateMarkerSize, formatLocationTooltip } from "@/lib/map-utils";
 
 interface MapMarkerProps {
@@ -21,7 +21,7 @@ export function MapMarker({
   const markerSize = calculateMarkerSize(eventCount);
 
   return (
-    <Marker coordinates={[coordinates[1], coordinates[0]]} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <Marker coordinates={createCoordinates(coordinates[1], coordinates[0])} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <g className="cursor-pointer transition-all duration-200 hover:scale-110">
         <circle
           r={markerSize}

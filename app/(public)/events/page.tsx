@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { EventsClient } from "./events-client";
 import { readFile } from "fs/promises";
 import { join } from "path";

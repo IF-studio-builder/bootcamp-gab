@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { NewsletterForm } from "@/components/forms/newsletter-form";
 import { Hero } from "@/components/hero/hero";
-import { FranceMap } from "@/components/map/france-map";
+import { FranceMapWrapper } from "@/components/map/france-map-wrapper";
 
 const features = [
   {
@@ -42,7 +42,7 @@ export default function HomePage() {
       />
 
       {/* Interactive Map Section */}
-      <FranceMap />
+      <FranceMapWrapper />
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-16">
