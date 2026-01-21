@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Capriola } from "next/font/google";
 import "./globals.css";
 
+// ## Fonts ##
 const modeVF = localFont({
   src: "../public/fonts/Mode_VF_Thin_Condensed.otf",
   variable: "--font-mode",
@@ -16,6 +17,7 @@ const capriola = Capriola({
   display: "swap",
 });
 
+// ## Metadata ##
 export const metadata: Metadata = {
   title: {
     default: "GAB | Gen AI Builders",
