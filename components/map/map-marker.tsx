@@ -1,6 +1,6 @@
 "use client";
 
-import { Marker } from "react-simple-maps";
+import { Marker } from "@vnedyalk0v/react19-simple-maps";
 import { calculateMarkerSize, formatLocationTooltip } from "@/lib/map-utils";
 
 interface MapMarkerProps {

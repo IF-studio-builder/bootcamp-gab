@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from "@vnedyalk0v/react19-simple-maps";
 import { MapMarker } from "./map-marker";
 import eventLocations from "@/data/event-locations.json";
 import type { EventLocation } from "@/lib/map-utils";

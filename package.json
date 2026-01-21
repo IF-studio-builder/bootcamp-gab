@@ -27,7 +27,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.71.0",
-    "react-simple-maps": "^3.0.0",
+    "@vnedyalk0v/react19-simple-maps": "^1.0.0",
     "tailwind-merge": "^3.0.2",
     "zod": "^3.25.76"
   },
@@ -36,7 +36,6 @@
     "@types/node": "^22.13.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "@types/react-simple-maps": "^3.0.6",
     "eslint": "^9.20.0",
     "eslint-config-next": "^15.2.4",
     "postcss": "^8.5.3",
