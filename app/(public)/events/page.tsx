@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { EventsClient } from "./events-client";
-import { readFile } from "fs/promises";
-import { join } from "path";
+import { createClient } from "@/lib/supabase/server";
 import type { Event } from "@/lib/supabase/types";
 
 export const metadata: Metadata = {
@@ -10,14 +9,22 @@ export const metadata: Metadata = {
     "Meetups, webinars et workshops GenAI. Rejoins la communauté GAB.",
 };
 
-// Charger les événements depuis le JSON
+// Charger les événements depuis Supabase
 async function getEvents(): Promise<Event[]> {
   try {
-    const filePath = join(process.cwd(), "data", "events.json");
-    const fileContents = await readFile(filePath, "utf8");
-    const eventsData = JSON.parse(fileContents) as Event[];
-    // Filtrer uniquement les événements publiés
-    return eventsData.filter((event) => event.published);
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("ab_events")
+      .select("*")
+      .eq("published", true)
+      .order("event_date", { ascending: false });
+
+    if (error) {
+      console.error("Error loading events from Supabase:", error);
+      return [];
+    }
+
+    return (data as Event[]) || [];
   } catch (error) {
     console.error("Error loading events:", error);
     return [];
